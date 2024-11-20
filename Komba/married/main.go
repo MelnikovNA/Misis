@@ -46,23 +46,29 @@ func main() {
 		{name: "Boris", preferences: []int{1, 2, 3, 0}, isEngaged: false},
 		{name: "Volodya", preferences: []int{3, 2, 0, 1}, isEngaged: false},
 		{name: "Gocha", preferences: []int{1, 0, 2, 3}, isEngaged: false},
+		{name: "Kolya", preferences: []int{1, 0, 2, 3}, isEngaged: false},
 	}
 
 	women := []Woman{
-		{name: "Elena", preferences: []int{3, 2, 1, 0}, currentPartner: -1},
-		{name: "Zhana", preferences: []int{3, 2, 1, 0}, currentPartner: -1},
-		{name: "Zina", preferences: []int{0, 1, 2, 3}, currentPartner: -1},
-		{name: "Irina", preferences: []int{2, 3, 1, 0}, currentPartner: -1},
+		{name: "Elena", preferences: []int{3, 2, 1, 0, 4}, currentPartner: -1},
+		{name: "Zhana", preferences: []int{3, 2, 1, 0, 4}, currentPartner: -1},
+		{name: "Zina", preferences: []int{0, 1, 2, 3, 4}, currentPartner: -1},
+		{name: "Irina", preferences: []int{2, 3, 1, 0, 4}, currentPartner: -1},
 	}
-	married := stableMarriage(men, women)
-	fmt.Println("Стабильные пары")
+	singleman, married := stableMarriage(men, women)
+	fmt.Println("\nСтабильные пары")
 	for _, woman := range married {
 		fmt.Printf("Женщина %s в браке с мужчиной %s\n", woman.name, men[woman.currentPartner].name)
+	}
+	for i := range singleman {
+		if !singleman[i].isEngaged {
+			fmt.Printf("\nМужчина %s без пары\n", men[i].name)
+		}
 	}
 }
 
 // Алгоритм предложений
-func stableMarriage(men []Man, women []Woman) []Woman {
+func stableMarriage(men []Man, women []Woman) ([]Man, []Woman) {
 	unmatchedMen := len(men)
 
 	for unmatchedMen > 0 {
@@ -70,8 +76,6 @@ func stableMarriage(men []Man, women []Woman) []Woman {
 			if men[i].isEngaged {
 				continue
 			}
-
-			// Шаг 1: Мужчина делает предложение лучшей женщине
 			if len(men[i].preferences) == 0 {
 				continue // Если список пуст, пропускаем
 			}
@@ -86,6 +90,7 @@ func stableMarriage(men []Man, women []Woman) []Woman {
 				woman.currentPartner = i
 				men[i].isEngaged = true
 				unmatchedMen--
+				fmt.Printf("Женщина %s выходит замуж за мужчину %s\n", woman.name, men[woman.currentPartner].name)
 			} else {
 				// Если женщина замужем, она сравнивает нового кандидата с текущим мужем
 				currentMan := woman.currentPartner
@@ -96,9 +101,15 @@ func stableMarriage(men []Man, women []Woman) []Woman {
 					men[currentMan].isEngaged = false
 					woman.currentPartner = newMan
 					men[newMan].isEngaged = true
+					fmt.Printf("Женщина %s разводится с мужчиной %s и выходит замуж с мужчиной %s\n", woman.name, men[currentMan].name, men[newMan].name)
 				}
 			}
 		}
+		for i := range men {
+			if len(men[i].preferences) == 0 && !men[i].isEngaged {
+				unmatchedMen--
+			}
+		}
 	}
-	return women
+	return men, women
 }
