@@ -118,6 +118,7 @@ func main() {
 		{name: "Zina", preferences: []int{0, 1, 2, 3, 4}, currentPartner: -1},
 		{name: "Irina", preferences: []int{2, 3, 1, 0, 4}, currentPartner: -1},
 	}
+
 	singleman, married := stableMarriage(men, women)
 
 	fmt.Println("\nСтабильные пары")
