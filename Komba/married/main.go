@@ -12,6 +12,22 @@ import "fmt"
 //Zina 2  (0, 1, 2, 3)
 //Irina 3 (2, 3, 1, 0)
 
+//men := []Man{
+//	{name: "Andrey", preferences: []int{1, 0, 4, 3, 2}, isEngaged: false},
+//	{name: "Boris", preferences: []int{1, 4, 2, 3, 0}, isEngaged: false},
+//	{name: "Volodya", preferences: []int{3, 2, 0, 1}, isEngaged: false},
+//	{name: "Gocha", preferences: []int{1, 4, 0, 2, 3}, isEngaged: false},
+//	{name: "Kolya", preferences: []int{1, 0, 2, 3, 4}, isEngaged: false},
+//}
+
+//women := []Woman{
+//	{name: "Elena", preferences: []int{3, 2, 1, 0, 4}, currentPartner: -1},
+//	{name: "Zhana", preferences: []int{3, 2, 1, 0, 4}, currentPartner: -1},
+//	{name: "Zina", preferences: []int{0, 1, 2, 3, 4}, currentPartner: -1},
+//	{name: "Irina", preferences: []int{2, 3, 1, 0, 4}, currentPartner: -1},
+//	{name: "Alisa", preferences: []int{2, 4, 1, 0, 3}, currentPartner: -1},
+//}
+
 // Структура для описания мужчины
 type Man struct {
 	name        string
@@ -26,7 +42,7 @@ type Woman struct {
 	currentPartner int
 }
 
-// проверка предпочтений женщины
+// Проверка предпочтений женщины
 func prefers(preferences []int, newMan, currentMan int) bool {
 	for _, man := range preferences {
 		if man == newMan {
@@ -51,7 +67,7 @@ func stableMarriage(men []Man, women []Woman) ([]Man, []Woman) {
 			if len(men[i].preferences) == 0 {
 				continue // Если список пуст, пропускаем
 			}
-			womanIndex := men[i].preferences[0]         // Берём первую женщину из списка
+			womanIndex := men[i].preferences[0]         // Берём самую предпочтительную женщину из списка
 			men[i].preferences = men[i].preferences[1:] // Вычёркиваем её
 
 			// Женщина, к которой сделано предложение
@@ -103,6 +119,7 @@ func main() {
 		{name: "Irina", preferences: []int{2, 3, 1, 0, 4}, currentPartner: -1},
 	}
 	singleman, married := stableMarriage(men, women)
+
 	fmt.Println("\nСтабильные пары")
 	for _, woman := range married {
 		fmt.Printf("Женщина %s в браке с мужчиной %s\n", woman.name, men[woman.currentPartner].name)
