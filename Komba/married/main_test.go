@@ -49,6 +49,7 @@ func TestStableMarriage5to4(t *testing.T) {
 			t.Errorf("Ожидалось, что мужчина %s останется без пары, но это не так", man.name)
 		}
 	}
+
 }
 
 func TestStableMarriage4to4(t *testing.T) {
@@ -88,6 +89,7 @@ func TestStableMarriage4to4(t *testing.T) {
 			}
 		}
 	}
+
 }
 
 func TestStableMarriage5to5(t *testing.T) {
@@ -129,9 +131,10 @@ func TestStableMarriage5to5(t *testing.T) {
 			}
 		}
 	}
+
 }
 
-func TestEqualPreferences(t *testing.T) {
+func TestEqualPreferences5to4(t *testing.T) {
 	// Входные данные с одинаковыми предпочтениями
 	men := []Man{
 		{name: "Andrey", preferences: []int{0, 1, 2, 3}, isEngaged: false},
@@ -162,4 +165,34 @@ func TestEqualPreferences(t *testing.T) {
 	if unmatchedCount != 1 {
 		t.Errorf("Ожидалось, что один мужчина останется без пары, получено: %d", unmatchedCount)
 	}
+
+}
+
+func TestEqualPreferences4to4(t *testing.T) {
+	// Входные данные с одинаковыми предпочтениями
+	men := []Man{
+		{name: "Andrey", preferences: []int{0, 1, 2, 3}, isEngaged: false},
+		{name: "Boris", preferences: []int{0, 1, 2, 3}, isEngaged: false},
+		{name: "Volodya", preferences: []int{0, 1, 2, 3}, isEngaged: false},
+		{name: "Gocha", preferences: []int{0, 1, 2, 3}, isEngaged: false},
+	}
+
+	women := []Woman{
+		{name: "Elena", preferences: []int{0, 1, 2, 3}, currentPartner: -1},
+		{name: "Zhana", preferences: []int{0, 1, 2, 3}, currentPartner: -1},
+		{name: "Zina", preferences: []int{0, 1, 2, 3}, currentPartner: -1},
+		{name: "Irina", preferences: []int{0, 1, 2, 3}, currentPartner: -1},
+	}
+
+	// Запуск алгоритма
+	finalMen, _ := stableMarriage(men, women)
+
+	// Проверка количества мужчин без пары
+	unmatchedCount := 0
+	for _, man := range finalMen {
+		if !man.isEngaged {
+			unmatchedCount++
+		}
+	}
+
 }
