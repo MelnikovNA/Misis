@@ -1,0 +1,105 @@
+import matplotlib.pyplot as plt  # Для визуализации графа
+import networkx as nx  # Для работы с графами
+import heapq  # Для приоритетной очереди в алгоритме Дейкстры
+
+def dijkstra(graph, start_node, target_node):
+    """
+    Алгоритм Дейкстры для нахождения кратчайшего пути в графе с весами.
+    """
+    # Инициализация расстояний
+    distances = {node: float('inf') for node in graph}
+    distances[start_node] = 0  # Расстояние до стартовой вершины равно 0
+    parents = {node: None for node in graph}  # Словарь для хранения предков каждой вершины
+    priority_queue = [(0, start_node)]  # Приоритетная очередь вида (расстояние, вершина)
+    visited_nodes = []  # Список посещённых вершин
+
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)  # Берём вершину с минимальным расстоянием
+
+        if current_node in visited_nodes:  # Если вершина уже была посещена, пропускаем
+            continue
+
+        visited_nodes.append(current_node)  # Отмечаем вершину как посещённую
+
+        if current_node == target_node:  # Если достигли целевой вершины, выходим
+            break
+
+        for neighbor, weight in graph[current_node]:  # Проходим по соседям текущей вершины
+            new_distance = current_distance + weight  # Считаем новое расстояние до соседа
+
+            if new_distance < distances[neighbor]:  # Если нашли более короткий путь
+                distances[neighbor] = new_distance  # Обновляем расстояние
+                parents[neighbor] = current_node  # Указываем предка
+                heapq.heappush(priority_queue, (new_distance, neighbor))  # Добавляем соседа в очередь
+
+    # Восстанавливаем путь
+    path = []
+    if distances[target_node] != float('inf'):
+        current = target_node
+        while current is not None:
+            path.append(current)
+            current = parents[current]
+        path.reverse()  # Путь восстанавливается в обратном порядке
+
+    return distances[target_node], visited_nodes, path
+
+def visualize_graph(graph, visited_nodes, start_node, target_node, path):
+    """
+    Визуализация графа с помощью NetworkX и Matplotlib.
+    """
+    G = nx.Graph()
+
+    # Добавляем рёбра с весами
+    for node, neighbors in graph.items():
+        for neighbor, weight in neighbors:
+            G.add_edge(node, neighbor, weight=weight)
+
+    pos = nx.spring_layout(G)  # Располагаем вершины графа
+    plt.figure(figsize=(10, 6))
+
+    # Рисуем граф
+    nx.draw(
+        G, pos, with_labels=True, node_color='lightblue', edge_color='gray',
+        node_size=800, font_size=10
+    )
+
+    # Добавляем веса рёбер
+    edge_labels = nx.get_edge_attributes(G, 'weight')
+    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=10)
+
+    # Выделяем путь
+    path_edges = list(zip(path, path[1:]))
+    nx.draw_networkx_edges(G, pos, edgelist=path_edges, edge_color='blue', width=2)
+
+    # Выделяем стартовую и целевую вершины
+    nx.draw_networkx_nodes(G, pos, nodelist=[start_node], node_color='yellow', node_size=1000)
+    nx.draw_networkx_nodes(G, pos, nodelist=[target_node], node_color='red', node_size=1000)
+
+    plt.title("Граф и выполнение алгоритма Дейкстры", fontsize=14)
+    plt.show()
+
+# Пример графа с весами рёбер
+graph = {
+    1: [(2, 1), (3, 6), (6, 6)],
+    2: [(1, 1), (3, 0), (4, 2), (5, 5), (7, 7)],
+    3: [(1, 6), (2, 0), (4, 4)],
+    4: [(2, 2), (3, 4), (7, 7)],
+    5: [(2, 5), (6, 0), (7, 2)],
+    6: [(1, 6), (5, 0)],
+    7: [(2, 7), (4, 7), (5, 2)]
+}
+
+# Стартовая и целевая вершины
+start_node = 1
+target_node = 7
+
+# Выполнение алгоритма Дейкстры
+shortest_distance, visited_nodes, path = dijkstra(graph, start_node, target_node)
+
+# Вывод результатов
+print(f"Кратчайшее расстояние от {start_node} до {target_node}: {shortest_distance}")
+print(f"Посещённые вершины: {visited_nodes}")
+print(f"Путь от {start_node} до {target_node}: {path}")
+
+# Визуализация графа
+visualize_graph(graph, visited_nodes, start_node, target_node, path)
